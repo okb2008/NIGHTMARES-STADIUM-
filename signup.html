@@ -3,64 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Signup - NIGHTMARES</title>
+  <title>Sign Up - TM NIGHTMARES</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+
+  <!-- Firebase SDK Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js"></script>
+
   <style>
-    body {
-      background: black;
-      color: white;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: 'Orbitron', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
     }
-    .form-box {
-      background: #111;
-      border: 2px solid #ff0066;
+    body {
+      background-color: #0a0a0a;
+      color: #fff;
+      padding: 30px 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background-color: #1a1a1a;
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 20px #ff0066;
     }
-    input, button {
-      display: block;
+    h2 {
+      color: #ff0066;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    input {
       width: 100%;
+      padding: 12px;
       margin: 10px 0;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
+      background-color: #2a2a2a;
       border: none;
+      border-radius: 6px;
+      color: #fff;
+    }
+    input::file-selector-button {
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-right: 10px;
     }
     button {
+      width: 100%;
+      padding: 12px;
       background-color: #ff0066;
+      border: none;
       color: white;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-top: 15px;
       cursor: pointer;
+    }
+    button:hover {
+      background-color: #e6005c;
     }
   </style>
 </head>
 <body>
-  <div class="form-box">
+  <div class="container">
     <h2>Welcome to NIGHTMARES ERA</h2>
-    <form id="signup-form">
-      <input type="text" id="player-name" placeholder="Player Name" required />
-      <input type="email" id="player-email" placeholder="Gmail" required />
-      <input type="password" id="player-pass" placeholder="Password" required />
-      <input type="text" id="gaming-id" placeholder="Gaming ID" required />
+    <form id="signupForm">
+      <input type="text" id="name" placeholder="Player Name" required />
+      <input type="email" id="email" placeholder="Gmail" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="file" id="avatar" accept="image/*" required />
+      <input type="text" id="gamingId" placeholder="Gaming ID" required />
       <input type="text" id="device" placeholder="Device" required />
       <button type="submit">Sign Up</button>
     </form>
   </div>
 
   <script>
-    document.getElementById("signup-form").addEventListener("submit", function(e) {
+    // Initialize Firebase with your configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBgvPOrTl4ehZcjsO8psFqFSACWgHLKIV4",
+      authDomain: "nightmares-stadium.firebaseapp.com",
+      projectId: "nightmares-stadium",
+      storageBucket: "nightmares-stadium.firebasestorage.app",
+      messagingSenderId: "1036015809762",
+      appId: "1:1036015809762:web:85bb79c1e76ac1906bdabb",
+      measurementId: "G-R9S89HWKCE"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    // Handle form submission
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const avatar = document.getElementById('avatar').files[0];
+      const gamingId = document.getElementById('gamingId').value;
+      const device = document.getElementById('device').value;
 
-      localStorage.setItem("playerName", document.getElementById("player-name").value);
-      localStorage.setItem("playerEmail", document.getElementById("player-email").value);
-      localStorage.setItem("playerPass", document.getElementById("player-pass").value);
-      localStorage.setItem("gamingID", document.getElementById("gaming-id").value);
-      localStorage.setItem("device", document.getElementById("device").value);
+      try {
+        // Create user with Firebase Authentication
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const uid = userCredential.user.uid;
 
-      window.location.href = "profile.html";
+        // Upload Avatar to Firebase Storage
+        const avatarRef = storage.ref().child(`avatars/${uid}`);
+        await avatarRef.put(avatar);
+        const avatarUrl = await avatarRef.getDownloadURL();
+
+        // Save User Data to Realtime Database
+        await db.ref('players/' + uid).set({
+          name,
+          email,
+          gamingId,
+          device,
+          avatarUrl,
+          uid,
+          joinedAt: new Date().toISOString()
+        });
+
+        alert("Sign Up Successful!");
+        window.location.href = "profile.html"; // Redirect to profile page
+      } catch (error) {
+        alert(error.message);
+      }
     });
   </script>
 </body>
