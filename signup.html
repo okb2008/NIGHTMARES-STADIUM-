@@ -3,78 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up - TM NIGHTMARES</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+  <title>Signup - NIGHTMARES</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Orbitron', sans-serif;
-    }
     body {
-      background-color: #0a0a0a;
-      color: #fff;
-      padding: 30px 20px;
+      background: black;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background-color: #1a1a1a;
+    .form-box {
+      background: #111;
+      border: 2px solid #ff0066;
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 20px #ff0066;
     }
-    h2 {
-      color: #ff0066;
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    input {
+    input, button {
+      display: block;
       width: 100%;
-      padding: 12px;
       margin: 10px 0;
-      background-color: #2a2a2a;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
       border: none;
-      border-radius: 6px;
-      color: #fff;
-    }
-    input::file-selector-button {
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      margin-right: 10px;
     }
     button {
-      width: 100%;
-      padding: 12px;
       background-color: #ff0066;
-      border: none;
       color: white;
-      border-radius: 6px;
-      font-size: 1rem;
-      margin-top: 15px;
       cursor: pointer;
-    }
-    button:hover {
-      background-color: #e6005c;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="form-box">
     <h2>Welcome to NIGHTMARES ERA</h2>
-    <form action="profile.html">
-      <input type="text" placeholder="Player Name" required />
-      <input type="email" placeholder="Gmail" required />
-      <input type="password" placeholder="Password" required />
-      <input type="file" accept="image/*" required />
-      <input type="text" placeholder="Gaming ID" required />
-      <input type="text" placeholder="Device" required />
+    <form id="signup-form">
+      <input type="text" id="player-name" placeholder="Player Name" required />
+      <input type="email" id="player-email" placeholder="Gmail" required />
+      <input type="password" id="player-pass" placeholder="Password" required />
+      <input type="text" id="gaming-id" placeholder="Gaming ID" required />
+      <input type="text" id="device" placeholder="Device" required />
       <button type="submit">Sign Up</button>
     </form>
   </div>
+
+  <script>
+    document.getElementById("signup-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      localStorage.setItem("playerName", document.getElementById("player-name").value);
+      localStorage.setItem("playerEmail", document.getElementById("player-email").value);
+      localStorage.setItem("playerPass", document.getElementById("player-pass").value);
+      localStorage.setItem("gamingID", document.getElementById("gaming-id").value);
+      localStorage.setItem("device", document.getElementById("device").value);
+
+      window.location.href = "profile.html";
+    });
+  </script>
 </body>
 </html>
