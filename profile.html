@@ -1,82 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Player Profiles - TM NIGHTMARES</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Orbitron', sans-serif;
-    }
     body {
-      background-color: #0c0c0c;
+      font-family: 'Orbitron', sans-serif;
+      background-color: #0d0d0d;
       color: #fff;
-      padding: 20px;
-    }
-    h2 {
-      text-align: center;
-      color: #00ffff;
-      margin-bottom: 20px;
-    }
-    .profiles-container {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .profile-card {
-      background-color: #1a1a1a;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 10px #00ffff;
-      display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 15px;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
     }
-    .avatar {
-      width: 80px;
-      height: 80px;
+    .card {
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #ff0066;
+      width: 90%;
+      max-width: 400px;
+    }
+    .card img {
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #00ffff;
+      border: 3px solid #ff0066;
+      margin-bottom: 20px;
     }
-    .info {
-      flex: 1;
+    .card p {
+      margin: 10px 0;
+      font-size: 1.1rem;
     }
-    .info p {
-      margin: 5px 0;
-      font-size: 0.95rem;
-      color: #ccc;
-    }
-    .info p strong {
-      color: #00ffff;
+    .highlight {
+      color: #ff0066;
     }
   </style>
 </head>
 <body>
-  <h2>Player Profiles</h2>
-  <div class="profiles-container">
-    <div class="profile-card">
-      <img src="https://i.imgur.com/4ZQZ5Zy.png" class="avatar" alt="Player Avatar">
-      <div class="info">
-        <p><strong>Gaming ID:</strong> Nightmare007</p>
-        <p><strong>Device:</strong> PC</p>
-        <p><strong>Email:</strong> johndoe@gmail.com</p>
-      </div>
-    </div>
+  <div class="card">
+    <img src="" id="playerPhoto" alt="Player Photo">
+    <p><strong>NIGHTMARES UID:</strong> <span class="highlight" id="playerUid"></span></p>
+    <p><strong>Player Name:</strong> <span id="playerName"></span></p>
+    <p><strong>Gaming ID:</strong> <span id="playerGamingId"></span></p>
+    <p><strong>Device:</strong> <span id="playerDevice"></span></p>
+  </div>  <!-- Firebase SDK -->  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBgvPOrTl4ehZcjsO8psFqFSACWgHLKIV4",
+      authDomain: "nightmares-stadium.firebaseapp.com",
+      databaseURL: "https://nightmares-stadium-default-rtdb.firebaseio.com",
+      projectId: "nightmares-stadium",
+      storageBucket: "nightmares-stadium.appspot.com",
+      messagingSenderId: "1036015809762",
+      appId: "1:1036015809762:web:85bb79c1e76ac1906bdabb",
+      measurementId: "G-R9S89HWKCE"
+    };
 
-    <!-- নতুন প্রোফাইল এখানে অ্যাড করতে পারো -->
-    <div class="profile-card">
-      <img src="https://i.imgur.com/4ZQZ5Zy.png" class="avatar" alt="Player Avatar">
-      <div class="info">
-        <p><strong>Gaming ID:</strong> KillerX99</p>
-        <p><strong>Device:</strong> Android</p>
-        <p><strong>Email:</strong> killerx99@gmail.com</p>
-      </div>
-    </div>
-  </div>
-</body>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ইউজার আইডি URL থেকে বের করা
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('uid');
+
+    if (userId) {
+      db.ref('users/' + userId).once('value').then(snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          document.getElementById("playerName").innerText = data.name;
+          document.getElementById("playerGamingId").innerText = data.gamingID;
+          document.getElementById("playerDevice").innerText = data.device;
+          document.getElementById("playerUid").innerText = data.uid;
+          if (data.photoURL) {
+            document.getElementById("playerPhoto").src = data.photoURL;
+          }
+        } else {
+          alert("Player data not found.");
+        }
+      });
+    } else {
+      alert("No UID provided in URL.");
+    }
+  </script></body>
 </html>
